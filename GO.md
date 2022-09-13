@@ -6,7 +6,7 @@
 
 ```go
 bool		 1字节		默认值：false
-byte		 1字节		默认值：unint8，取值范围[0,255]
+byte		 1字节		默认值：uint8，取值范围[0,255]
 rune		 4字节		unicode ponit code int32
 int，uint     4或8字节   取决于操作系统，32或64
 int8,uint8	  1字节	 -128~127，0~255
@@ -53,7 +53,7 @@ type myfloat = float32
 #### 自定义类型
 
 ```go
-type ms[string]string
+type ms map[string]string
 type add func(a,b int)int
 type user struct {name:int;age:int}
 ```
@@ -244,5 +244,75 @@ func test() {
 //ue=255 11111111
 //ub=255 11111111
 //发生丢失
+```
+
+### 数组
+
+##### 初始化
+
+```go
+var arr1 [5]int = [5]int{}//数组必须指定长度和类型，且长度和类型指定后不可变
+var arr2 = [5]int{}
+var arr3 = [5]int{3,2}
+var arr4 = [5]int{2:15,4:30}//指定index赋值
+var arr5 = [...]int{3,2,6,4}//根据{}里的元素个数推断数组长度
+var arr6 = [...]struct {
+	name string
+    age int
+}{{"tom".18},{"jim",20}}
+```
+
+##### 二维数组初始化
+
+```go
+var arr = [5][3]{{1,2},{3,4,5}}//五行三列
+var arr2 = [...][1]{{3,3,3},{1,1,1},{2,2,}}//动态赋值行数
+```
+
+##### 访问元素
+
+```go
+通过index访问
+arr[0]//首元素
+arr[len(arr)-1]
+
+//访问二维数组
+arr[1][2]//第二行第三列
+```
+
+##### 遍历数组
+
+```go
+var arr = [5]int{1,2,3,4,5}
+//range
+for i,ele := range arr{
+    fmt.Println(ele)
+}
+//for
+for i :=0;i<10;i++{
+	fmt.Println(i)
+}
+//遍历二维数组
+for i,ele :=range arr {
+    for e,i := range ele{
+    	fmt.Println(arr[i][e])
+    }
+}
+```
+
+##### cap和len
+
+```go
+cap代表capacity容量
+len代表length长度
+len代表数组里有几个元素，cap代表分配给数组的内存了空间容纳多少个元素
+有余数组初始化后长度不变，不需要预留空间，len(arr)==cap(arr)
+```
+
+#####  数组传参
+
+```
+go没有按引用传参，是按值传参，传递的值实际上是数组的拷贝
+修改传进来的数组，不影响外部数组，如果修改，传入指针
 ```
 
