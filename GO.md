@@ -39,6 +39,11 @@ a := 123
 var poniter unsafe.Pointer = unsafe.Pointer(&a)
 var p  uintptr = uintptr(poniter)
 var ptr *int = &a
+//取址
+a :=1
+var b = &a
+//解析指针
+*b = 2
 ```
 
 ### 自定义类型
@@ -316,3 +321,57 @@ go没有按引用传参，是按值传参，传递的值实际上是数组的拷
 修改传进来的数组，不影响外部数组，如果修改，传入指针
 ```
 
+### 切片
+
+```go
+//切片的地址和地址首元素的地址是两回事
+type slice struct {
+	array unsafe.Pointer //指针
+    len int				//长度
+    cap int				//容量
+}
+```
+
+##### 初始化
+
+```go
+var s []int			//切片声明，len=cap=0
+s = []int{}			//初始化，len=cap=0
+s = make([]int,3)	//初始化，len=cap=3
+s = make([]int,3,5)	//初始化，len=3,cap=5
+s = []int{1,2,3,4,5}//初始化，len=cap=5
+s2d :=[][]int{
+    {1},{2,3}
+}
+```
+
+##### append
+
+```go
+切片相对于数组，可以自动扩容，可以追加元素
+追加元素放在预留空间里，长度加1
+预留空间用完，则会申请新的内存空间，新申请的内存空间变成之前的2倍或者1.25倍，把原内存空间拷贝出来，执行append操作
+```
+
+```go
+func main() {
+	var s []int
+	fmt.Printf("len %d cap %d\n", len(s), cap(s))
+	s = []int{}
+	s = make([]int, 3, 5)
+	fmt.Printf("len %d cap %d\n", len(s), cap(s))
+	s = append(s, 999)
+	fmt.Printf("len %d cap %d %d\n", len(s), cap(s), s)
+}
+```
+
+##### 子切片
+
+```go
+//长3，容量5
+s :=make([]int,3,5)
+//截取1,2位元素,len2,cap4(首地址是1，对于母切片上，有1,2,3,4容量)
+sub_slice = s[1:3] 
+//子切片和母切片共享底层的内存空间，子切片修改会反映到母切片上，在子切片上执行append会把新元素放到母切片的预留内存空间上
+//当子切片不断地append，消耗完母切片预留的内存空间，子切片和母切片发生内存分离，两个切片毫无关系
+```
